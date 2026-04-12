@@ -25,8 +25,9 @@ A simple and responsive weather application that fetches live weather data using
 
 3. <img width="2833" height="726" alt="Screenshot 2026-04-12 155139" src="https://github.com/user-attachments/assets/98de0786-95ca-4576-8fdd-f6468f7f14bc" />
 
+🌐 Live Demo
 
-
+https://kanishak2005.github.io/weather-forecast-webapp/
 
 ⚙️ Installation & Setup
 
