@@ -56,7 +56,9 @@ document.addEventListener("click", e => {
     if (!searchInput.contains(e.target) && !suggestionsList.contains(e.target)) hideSuggestions();
 });
 
-searchInput.addEventListener("keypress", e => e.key === "Enter" && getWeather(searchInput.value));
+searchInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") getWeather(searchInput.value);
+});
 button.onclick = () => getWeather(searchInput.value);
 
 /* ---------- WEATHER ---------- */
@@ -138,9 +140,12 @@ function updateUI(data) {
     showForecast(data);
     showDetails(data);
 
-    updateDayNightFromAPI(astro.sunrise, astro.sunset, astro.moonrise, astro.moonset);
-    updateSunPositionFromAPI(astro.sunrise, astro.sunset);
-    startSkyAnimation(astro.sunrise, astro.sunset, astro.moonrise, astro.moonset);
+const localtime = data.location.localtime;
+const hours = getCityHours(localtime);
+
+updateDayNightFromAPI(astro.sunrise, astro.sunset, astro.moonrise, astro.moonset, hours);
+updateSunPositionFromAPI(astro.sunrise, astro.sunset, hours);
+startSkyAnimation(astro.sunrise, astro.sunset, astro.moonrise, astro.moonset, localtime);
 
     requestAnimationFrame(() => {
         drawTempGraph(data);
@@ -158,10 +163,8 @@ const parseTime = (t) => {
 };
 
 /* ---------- DAY/NIGHT ---------- */
-function updateDayNightFromAPI(sunrise, sunset, moonrise, moonset) {
+function updateDayNightFromAPI(sunrise, sunset, moonrise, moonset, hours) {
     const sky = $("sky");
-    const now = new Date();
-    const hours = now.getHours() + now.getMinutes()/60;
 
     const sr = parseTime(sunrise), ss = parseTime(sunset);
 
@@ -178,20 +181,32 @@ function updateDayNightFromAPI(sunrise, sunset, moonrise, moonset) {
         moon.style.opacity = 1;
         starsContainer.style.opacity = 1;
 
-        const mr = parseTime(moonrise), ms = parseTime(moonset);
+        const validMoon = moonrise.includes(":") && moonset.includes(":");
 
-        const duration = ms > mr ? (ms - mr) : (24 - mr + ms);
-        const elapsed = hours >= mr ? (hours - mr) : (24 - mr + hours);
-        const p = Math.min(Math.max(elapsed / duration, 0), 1);
+if (validMoon) {
+    const mr = parseTime(moonrise);
+    const ms = parseTime(moonset);
+
+    const duration = ms > mr ? (ms - mr) : (24 - mr + ms);
+    const elapsed = hours >= mr ? (hours - mr) : (24 - mr + hours);
+
+    const p = Math.min(Math.max(elapsed / duration, 0), 1);
+
+    moon.style.opacity = 1;
+    moon.style.left = `${100 - p * 100}%`;
+    moon.style.top = `${60 - Math.sin(p * Math.PI) * 40}px`;
+
+} else {
+    // No moon data → hide moon safely
+    moon.style.opacity = 0;
+}
 
         moon.style.left = `${100 - p*100}%`;
         moon.style.top = `${60 - Math.sin(p*Math.PI)*40}px`;
     }
 }
 
-function updateSunPositionFromAPI(sunrise, sunset) {
-    const now = new Date();
-    const hours = now.getHours() + now.getMinutes()/60;
+function updateSunPositionFromAPI(sunrise, sunset, hours) {
 
     const sr = parseTime(sunrise), ss = parseTime(sunset);
 
@@ -202,12 +217,26 @@ function updateSunPositionFromAPI(sunrise, sunset) {
     }
 }
 
-function startSkyAnimation(sr, ss, mr, ms) {
+function startSkyAnimation(sr, ss, mr, ms, localtime) {
     clearInterval(skyInterval);
+
+   let baseTime = new Date(localtime.replace(" ", "T"));
     skyInterval = setInterval(() => {
-        updateDayNightFromAPI(sr, ss, mr, ms);
-        updateSunPositionFromAPI(sr, ss);
+        baseTime.setMinutes(baseTime.getMinutes() + 1);
+
+        const hours = baseTime.getHours() + baseTime.getMinutes() / 60;
+
+        updateDayNightFromAPI(sr, ss, mr, ms, hours);
+        updateSunPositionFromAPI(sr, ss, hours);
+
     }, 60000);
+}
+
+function getCityHours(localtime) {
+    // format: "2026-04-12 08:30"
+    const time = localtime.split(" ")[1];
+    const [h, m] = time.split(":").map(Number);
+    return h + m / 60;
 }
 
 /* ---------- FORECAST ---------- */
@@ -254,7 +283,7 @@ function drawTempGraph(data) {
     if (tempChart) tempChart.destroy();
 
     const hours = data.forecast.forecastday[0].hour;
-    const currentHour = new Date().getHours();
+    const currentHour = Math.floor(getCityHours(data.location.localtime));
     const filtered = hours.filter((_, i) => i % 3 === 0);
 
     const temps = filtered.map(h => h.temp_c);
