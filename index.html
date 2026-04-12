@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<div class="sky" id="sky">
+    <div class="sun"></div>
+    <div class="moon"></div>
+    <div class="stars" id="stars"></div>
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+    <div class="rain"></div>
+</div>
+
+<div class="wrapper">
+    <div class="search-box">
+        <div class="search-wrapper">
+            <input type="text" id="search" placeholder="Search city...">
+            <button class="search-btn">🔍</button>
+            <ul id="suggestions" class="suggestions-list"></ul>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="top">
+        <h2 id="location">--</h2>
+        <div class="temp">
+            <span id="temp">--°</span>
+            <small>C</small>
+        </div>
+        <p id="condition">--</p>
+    </div>
+
+    <div class="forecast" id="forecast"></div>
+    <div class="details" id="details"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
