@@ -17,6 +17,17 @@ A simple and responsive weather application that fetches live weather data using
 * JavaScript
 * Weather API (e.g., OpenWeather API)
 
+📸 Screenshots
+
+1 .<img width="2805" height="1254" alt="Screenshot 2026-04-12 155053" src="https://github.com/user-attachments/assets/77c8032a-3f97-4c01-818e-5319c83d518f" />
+
+2. <img width="2833" height="870" alt="Screenshot 2026-04-12 155118" src="https://github.com/user-attachments/assets/3d1812a6-7c59-4031-ba3e-77637c1fef00" />
+
+3. <img width="2833" height="726" alt="Screenshot 2026-04-12 155139" src="https://github.com/user-attachments/assets/98de0786-95ca-4576-8fdd-f6468f7f14bc" />
+
+
+
+
 ⚙️ Installation & Setup
 
 1. Clone the repository:
