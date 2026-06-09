@@ -27,7 +27,7 @@ A simple and responsive weather application that fetches live weather data using
 
 🌐 Live Demo
 
-https://kanishak2005.github.io/weather-forecast-webapp/
+(https://weather-web-app-net.vercel.app/)
 
 ⚙️ Installation & Setup
 
